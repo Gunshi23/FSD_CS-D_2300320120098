@@ -1,26 +1,38 @@
-const http = require("http");
-const fs = require("fs");
-const path = require("path");
+import http from "http";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const server = http.createServer((req, res) => {
-    let filePath = req.url === "/" ? "index.html" : req.url;
-    let ext = path.extname(filePath);
+  let filePath;
+  let contentType;
 
-    let contentType = "text/plain";
-    if (ext === ".html") contentType = "text/html";
-    else if (ext === ".css") contentType = "text/css";
+  if (req.url === "/") {
+    filePath = path.join(__dirname, "public", "index.html");
+    contentType = "text/html";
+  } else if (req.url === "/style.css") {
+    filePath = path.join(__dirname, "public", "style.css");
+    contentType = "text/css";
+  } else {
+    res.writeHead(404);
+    res.end("404 Not Found");
+    return;
+  }
 
-    fs.readFile(filePath, (err, data) => {
-        if (err) {
-            res.writeHead(404, { "Content-Type": "text/plain" });
-            res.end("File not found");
-        } else {
-            res.writeHead(200, { "Content-Type": contentType });
-            res.end(data);
-        }
-    });
+  fs.readFile(filePath, (err, content) => {
+    if (err) {
+      res.writeHead(500);
+      res.end("Server Error");
+    } else {
+      res.writeHead(200, { "Content-Type": contentType });
+      res.end(content);
+    }
+  });
 });
 
 server.listen(3000, () => {
-    console.log("Server running at http://localhost:3000");
+  console.log("Server running at http://localhost:3000");
 });
