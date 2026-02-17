@@ -10,10 +10,10 @@ fs.readFile('input.txt', 'utf8', (err, data)) => {
     }
 };
 
-fs.writeFile('output.txt', 'Hello, World!', (err) => {
-    if (err) {
-        console.error(err);
-        return;
-    }   
-    console.log('File has been written successfully.');
-});
+fs.writeFile('output.txt', 'Hello, World!', function (err) {
+        if (err) {
+            console.error(err);
+            return;
+        }
+        console.log('File has been written successfully.');
+    });
